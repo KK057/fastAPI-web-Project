@@ -11,6 +11,6 @@ SessionLocal= sessionmaker(autocommit=False,autoflush=False, bind=engine)
 class Base(DeclarativeBase):
     pass
 
-def get_db():
+def get_db():#main server start
     with SessionLocal() as db:
         yield db
