@@ -6,7 +6,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
-
+#Database models (for saving that data to a database like PostgreSQL or SQLite). 
 
 class User(Base):
     __tablename__ = "users"
