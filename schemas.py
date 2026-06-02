@@ -6,6 +6,10 @@ class UserBase(BaseModel):
     username: str=Field(min_length=1,max_length=10)
     email:EmailStr=Field(max_length=30)
 
+class UserBase2(BaseModel):
+    username2: str=Field(min_length=1,max_length=10)
+    email2:EmailStr=Field(max_length=30)
+
 class UserCreate(UserBase):
     pass
 
