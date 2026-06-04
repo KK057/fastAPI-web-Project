@@ -170,18 +170,60 @@ def get_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
 @app.put("/api/posts/{post_id}", response_model=PostResponse)
-def update_post_full(post_id: int, post_data:PostCreate, db: Annotated[Session, Depends(get_db)]):
+def update_post_full(
+    post_id: int,
+    post_data:PostCreate,
+    db: Annotated[Session, Depends(get_db)],):
+
     result = db.execute(select(models.Post).where(models.Post.id == post_id))
     post = result.scalars().first()
     if not post:
-      raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-
-    if post_data.user_id != post.user_id:
-        result = db.execute(select (models.User).where(models.User.id==post_data.user_id),
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+ 
+    if post_data.user_id!=post.user_id:
+         result = db.execute(select(models.User).where(models.User.id == post_data.user_id))
+         user = result.scalars().first()
+         if not user:
+            raise HTTPException(
+              status_code=status.HTTP_404_NOT_FOUND,
+              detail="User not found",
         )
-        user=result.scalars().first()
-        if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="User Not Found")
+    post.title=post-post_data.title
+    post.content=post_data.content
+    post.user_id=post_data.user_id
+
+    db.commit()
+    db.refresh(post)
+    return post
+
+@app.patch("/api/posts/{post_id}", response_model=PostResponse)
+def update_post_full(
+    post_data:PostUpdate,
+    db: Annotated[Session, Depends(get_db)],):
+
+    result = db.execute(select(models.Post).where(models.Post.id == post_id))
+    post = result.scalars().first()
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+ 
+    # Convert the incoming Pydantic schema to a dictionary
+    update_data = post_data.model_dump(exclude_unset=True)
+
+    # Loop through the dictionary and update the database object
+    for field, value in update_data.items():
+        setattr(post, field, value) 
+
+    db.commit()
+    db.refresh(post)
+    return post
+
+@app.delete("/api/posts/{post_id}",status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Post).where(models.Post.id == post_id))
+    post = result.scalars().first()
+    if not post:
+
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
 @app.exception_handler(StarletteHTTPException)
 def general_http_exception_handler(request: Request, exception: StarletteHTTPException):

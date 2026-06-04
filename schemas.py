@@ -2,37 +2,40 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-class UserBase(BaseModel):
-    username: str=Field(min_length=1,max_length=10)
-    email:EmailStr=Field(max_length=30)
 
-class UserBase2(BaseModel):
-    username2: str=Field(min_length=1,max_length=10)
-    email2:EmailStr=Field(max_length=30)
+class UserBase(BaseModel):
+    username: str = Field(min_length=1, max_length=50)
+    email: EmailStr = Field(max_length=120)
+
 
 class UserCreate(UserBase):
     pass
 
+
 class UserResponse(UserBase):
-    model_config= ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     image_file: str | None
-    image_path:str
+    image_path: str
+
 
 class PostBase(BaseModel):
-    title: str = Field(min_length=1, max_length=30)
-    content: str = Field(min_length=1,max_length=300)
+    title: str = Field(min_length=1, max_length=100)
+    content: str = Field(min_length=1)
+
 
 class PostCreate(PostBase):
-    user_id: int #Temporary
+    user_id: int  # TEMPORARY
 
-class PostUpdate(PostBase):
-    title: str | None = Field(default=None, min_length=1,max_length=100)
-    content: str |None = Field(min_length=1)
+class PostUpdate(BaseModel):
+    title: str|None = Field(default=None,min_length=1, max_length=100)
+    content: str|None = Field(default=None,min_length=1)
 
 class PostResponse(PostBase):
-    model_config=ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     user_id: int
-    date_posted:datetime
-    date_posted: str
+    date_posted: datetime
+    author: UserResponse
