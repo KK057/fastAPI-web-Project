@@ -206,7 +206,6 @@ def update_post_full(
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
  
-    # Convert the incoming Pydantic schema to a dictionary
     update_data = post_data.model_dump(exclude_unset=True)
 
     # Loop through the dictionary and update the database object
