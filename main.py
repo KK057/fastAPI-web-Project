@@ -160,7 +160,7 @@ def create_post(post: PostCreate, db: Annotated[Session, Depends(get_db)]):
     db.refresh(new_post)
     return new_post
 
-
+#gopod
 @app.get("/api/posts/{post_id}", response_model=PostResponse)
 def get_post(post_id: int, db: Annotated[Session, Depends(get_db)]):
     result = db.execute(select(models.Post).where(models.Post.id == post_id))
